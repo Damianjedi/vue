@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link>
-      <router-link to="/login">Login</router-link>
-      <router-link to="/register">Register</router-link>
+    <nav id="navbar">
+      <router-link to="/" class="left"><img src="@/assets/EL.png" alt="Home" class="logo" /></router-link>
+      <div class="right">
+        <router-link to="/login">Login</router-link>
+        <router-link to="/register">Register</router-link>
+      </div>
     </nav>
     <router-view></router-view>
   </div>
@@ -17,6 +19,9 @@ export default {
 
 
 <style>
+.logo {
+  height: 35px;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -24,5 +29,28 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+#navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e5ecf1;
+  position: fixed;
+  top: 0;
+  width: 99%;
+  height: 50px;
+  box-shadow: 0 2px 4px rgba(34, 124, 228, 0.1);
+  border-radius: 10px;
+}
+
+#navbar a {
+  color: rgb(0, 89, 255);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+}
+
+body {
+  background-color: #9ccaf5;
+  margin-top: 70px; /* To prevent content from being hidden under the navbar */
 }
 </style>
