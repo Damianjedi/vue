@@ -29,18 +29,18 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  margin: 10px 0 auto auto;
 }
 #navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #e5ecf1;
-  position: fixed;
-  top: 0;
-  width: 99%;
+  width: 100%;
   height: 50px;
   box-shadow: 0 2px 4px rgba(34, 124, 228, 0.1);
   border-radius: 10px;
+  margin: 10px 0 auto auto;
 }
 
 #navbar a {
@@ -51,6 +51,5 @@ export default {
 
 body {
   background-color: #9ccaf5;
-  margin-top: 70px; /* To prevent content from being hidden under the navbar */
 }
 </style>
