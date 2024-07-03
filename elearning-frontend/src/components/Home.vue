@@ -3,12 +3,16 @@
     <h1>Posty</h1>
     <form class="postPublish" @submit.prevent="createPost">
       <textarea v-model="newPostContent" placeholder="Napisz post..."></textarea>
+      <input type="file" id="fileInput" />
       <button type="submit">Opublikuj</button>
     </form>
     <div v-if="error" class="error">{{ error }}</div>
     <div v-for="post in posts" :key="post.id" class="post">
       <p>{{ post.content }}</p>
       <small>Opublikowano przez {{ post.user.firstName }} dnia {{ formatDate(post.createdAt) }}</small>
+      <div v-if="post.fileName">
+        <a :href="`https://localhost:7153/api/elearning/posts/${post.id}/file`" target="_blank">{{ post.fileName }}</a>
+      </div>
       <form class="commentPublish" @submit.prevent="createComment(post.id)">
         <textarea v-model="newCommentContent[post.id]" placeholder="Napisz komentarz..."></textarea>
         <button type="submit">Opublikuj</button>
@@ -58,10 +62,18 @@ export default {
           this.error = 'You must be logged in to create a post';
           return;
         }
+        const formData = new FormData();
+        formData.append('Content', this.newPostContent);
+        const fileInput = document.getElementById('fileInput'); // assuming you have a file input with id "fileInput"
+        if (fileInput.files.length > 0) {
+        formData.append('File', fileInput.files[0]);
+        }
         const response = await axios.post('https://localhost:7153/api/elearning/posts', 
-          {Content: this.newPostContent }, 
-          {headers: {Authorization: `Bearer ${token}` } }
+          formData,
+          {headers: {Authorization: `Bearer ${token}`, 
+            'Content-Type': 'multipart/form-data' } }
           );
+          console.log(response.data);
         this.posts.push(response.data);
         this.newPostContent = '';
         window.location.reload()
