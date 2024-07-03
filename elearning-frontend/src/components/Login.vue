@@ -3,11 +3,11 @@
     <h2>Login</h2>
     <form @submit.prevent="login">
       <div>
-        <label for="email">Email:</label>
+        <label for="email">Email</label>
         <input type="email" v-model="email" required />
       </div>
       <div>
-        <label for="password">Password:</label>
+        <label for="password">Password</label>
         <input type="password" v-model="password" required />
       </div>
       <button type="submit">Login</button>
@@ -61,6 +61,21 @@ export default {
   resize: none;
   margin: 10px auto auto auto;
 }
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+    box-sizing: border-box;
+    width: 100%;
+    font-family: Kanit;
+    font-weight: 200;
+    text-align: center;
+  }
+
+  button {
+    margin: 25px auto;
+  }
 
 
 </style>

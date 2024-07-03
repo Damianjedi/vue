@@ -9,9 +9,14 @@
     <div v-if="error" class="error">{{ error }}</div>
     <div v-for="post in posts" :key="post.id" class="post">
       <p>{{ post.content }}</p>
-      <small>Opublikowano przez {{ post.user.firstName }} dnia {{ formatDate(post.createdAt) }}</small>
+      <small>Opublikowano przez <span style="font-weight: bold"> {{ post.user.firstName }} </span> dnia {{ formatDate(post.createdAt) }}</small>
       <div v-if="post.fileName">
-        <a :href="`https://localhost:7153/api/elearning/posts/${post.id}/file`" target="_blank">{{ post.fileName }}</a>
+        <div class="holdImg" v-if="isImageFile(post.fileName)">
+          <img :src="`https://localhost:7153/api/elearning/posts/${post.id}/file`" :alt="post.fileName" />
+        </div>
+        <div v-else>
+          <a :href="`https://localhost:7153/api/elearning/posts/${post.id}/file`" target="_blank">{{ post.fileName }}</a>
+        </div>
       </div>
       <form class="commentPublish" @submit.prevent="createComment(post.id)">
         <textarea v-model="newCommentContent[post.id]" placeholder="Napisz komentarz..."></textarea>
@@ -19,7 +24,7 @@
       </form>
       <div v-for="comment in post.comments" :key="comment.id" class="comment">
         <p>{{ comment.content }}</p>
-        <small>Skomentowano przez {{ comment.user.firstName }} dnia {{ formatDate(comment.createdAt) }}</small>
+        <small>Skomentowano przez <span style="font-weight: bold"> {{ comment.user.firstName }} </span> dnia {{ formatDate(comment.createdAt) }}</small>
       </div>
     </div>
   </div>
@@ -49,7 +54,10 @@ export default {
     async fetchPosts() {
       try {
         const response = await axios.get('https://localhost:7153/api/elearning/posts');
-        this.posts = response.data;
+        this.posts = response.data.map(post => ({
+          ...post,
+          fileName: post.fileName || null
+        }));
       } catch (error) {
         this.error = 'Error fetching posts';
         console.error(error);
@@ -62,11 +70,15 @@ export default {
           this.error = 'You must be logged in to create a post';
           return;
         }
+        const gg = ('FileContentType', '', 'FileName', '', 'FileData', new Blob());
         const formData = new FormData();
         formData.append('Content', this.newPostContent);
-        const fileInput = document.getElementById('fileInput'); // assuming you have a file input with id "fileInput"
+        const fileInput = document.getElementById('fileInput'); 
         if (fileInput.files.length > 0) {
         formData.append('File', fileInput.files[0]);
+        } else {
+            
+            formData.append('File', gg);
         }
         const response = await axios.post('https://localhost:7153/api/elearning/posts', 
           formData,
@@ -96,11 +108,17 @@ export default {
         const post = this.posts.find(p => p.id === postId);
         post.comments.push(response.data);
         this.$set(this.newCommentContent, postId, '');
+        window.location.reload()
       } catch (error) {
         this.error = error.response ? error.response.data : 'Error creating comment';
         console.error(error);
+        window.location.reload()
       }
-    }
+    },
+    isImageFile(fileName) {
+      const extension = fileName.split('.').pop().toLowerCase();
+      return ['jpg', 'jpeg', 'png'].includes(extension);
+    },
   }
 };
 </script>
@@ -109,6 +127,12 @@ export default {
 
 <style>
 
+.holdImg img {
+  width: 400px;
+  height: 600px;
+  max-width: 100%;
+  max-height: 100%;
+}
 
 .mainSection {
   max-width: 600px;
@@ -132,11 +156,21 @@ export default {
 }
 
 .postPublish {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 20px auto auto auto;
 }
 
 .commentPublish {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 20px auto auto auto;
+}
+
+#fileInput {
+  margin: 10px auto;
 }
 
 textarea {
@@ -146,8 +180,7 @@ textarea {
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  resize: none;
-  margin: 20px auto auto auto;
+  resize: none; 
 }
 
 .comment-form {
@@ -157,7 +190,6 @@ textarea {
 }
 
 button {
-  align-self: flex-end;
   padding: 10px 20px;
   border-radius: 5px;
   background-color: #0047AB;
@@ -182,7 +214,7 @@ button:hover {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  margin: 30px auto;
 }
 
 .post-content {
@@ -211,4 +243,5 @@ button:hover {
   font-size: 12px;
   color: lightgray;
 }
+
 </style>

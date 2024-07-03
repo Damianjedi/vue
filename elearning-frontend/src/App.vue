@@ -3,8 +3,13 @@
     <nav id="navbar">
       <router-link to="/" class="left"><img src="@/assets/EL.png" alt="Home" class="logo" /></router-link>
       <div class="right">
+        <template v-if="isLoggedIn">
+        <a href="#" @click.prevent="logout">Wyloguj</a>
+        </template>
+        <template v-else>
         <router-link to="/login">Login</router-link>
         <router-link to="/register">Register</router-link>
+        </template>
       </div>
     </nav>
     <router-view></router-view>
@@ -13,7 +18,23 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data() {
+    return {
+      isLoggedIn: false
+    }
+  },
+  mounted() {
+    if (localStorage.getItem('token')) {
+      this.isLoggedIn = true;
+    }
+  },
+    methods: {
+    logout() {
+      localStorage.removeItem('token');
+      this.isLoggedIn = false;
+    }
+  }
 };
 </script>
 
